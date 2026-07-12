@@ -34,3 +34,9 @@ database.
 
 - Mobile-first, glass aesthetic (`backdrop-blur`), fast.
 - Map rendering on canvas — never thousands of DOM nodes.
+
+## Phase plan
+
+See [docs/PHASES.md](docs/PHASES.md) for the roadmap (Fas 0 ✅ genre data → Fas 1
+canvas map → Fas 2 auth/lists → Fas 3 previews → Fas 4 polish/PWA). Read it before
+starting new work so the next step is never a guess.
