@@ -22,6 +22,7 @@ export const player = {
   getState(): PlayerState { return state },
   current(): Track | null { return state.index >= 0 ? state.queue[state.index] ?? null : null },
   playQueue(queue: Track[], index: number): void { set({ queue, index, isPlaying: true }); load(true) },
+  pause(): void { audio?.pause(); set({ isPlaying: false }) },
   toggle(): void {
     if (!audio || state.index < 0) return
     if (state.isPlaying) { audio.pause(); set({ isPlaying: false }) }

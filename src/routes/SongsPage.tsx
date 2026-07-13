@@ -2,6 +2,7 @@ import { useParams } from 'react-router'
 import { getSubgenreBySlug, getTracksForSubgenre } from '../lib/db'
 import { useAsync } from '../hooks/useAsync'
 import { TrackRow } from '../components/TrackRow'
+import { capitalize } from '../lib/links'
 
 export function SongsPage() {
   const { subgenreSlug = '' } = useParams()
@@ -15,7 +16,7 @@ export function SongsPage() {
     <section>
       <div className="relative px-4 pb-4 pt-7" style={{ background: `linear-gradient(160deg, ${data?.sub?.color ?? '#7b5cff'}88, transparent 70%)` }}>
         <p className="text-[11px] uppercase tracking-[1.3px] text-white/50">Subgenre</p>
-        <h1 className="mt-0.5 text-[26px] font-bold tracking-tight">{data?.sub?.name ?? ''}</h1>
+        <h1 className="mt-0.5 text-[26px] font-bold tracking-tight">{data?.sub ? capitalize(data.sub.name) : ''}</h1>
       </div>
       {loading && <p className="mt-8 px-4 text-white/40">Laddar…</p>}
       {error && <p className="mt-8 px-4 text-red-300">{error}</p>}

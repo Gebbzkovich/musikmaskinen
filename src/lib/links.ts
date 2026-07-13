@@ -12,3 +12,7 @@ export function formatDuration(ms: number): string {
   const s = Math.round(ms / 1000)
   return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`
 }
+// everynoise genre names are lowercase; capitalize the first letter for display.
+export function capitalize(s: string): string {
+  return s.length === 0 ? s : s[0].toUpperCase() + s.slice(1)
+}
