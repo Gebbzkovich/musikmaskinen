@@ -1,4 +1,3 @@
-// @ts-expect-error - bun:test types
 import { test, expect } from 'bun:test'
 import { families, type FamilySeed } from './taxonomy.ts'
 import { slugify } from './slug.ts'
