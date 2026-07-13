@@ -9,6 +9,9 @@ import { slugify } from './lib/slug.ts'
 import { buildSearchUrl, parseTracks, type RawTrack } from './lib/itunes.ts'
 
 const PER_SUBGENRE = 30
+// iTunes rate-limits ~20 requests/minute per IP. Stay under it with steady pacing
+// (bursts get 403-blocked), rather than fast requests + retries on a blocked burst.
+const THROTTLE_MS = 3000
 
 function requireEnv(k: string): string {
   const v = process.env[k]
@@ -16,6 +19,28 @@ function requireEnv(k: string): string {
   return v
 }
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
+
+// iTunes rate-limits bursts with 403/429. Retry those (and 5xx) with exponential
+// backoff so a temporary throttle doesn't silently drop a subgenre's tracks.
+// Returns a successful Response, a non-retryable Response, or null when every
+// attempt failed (retryable status or a thrown network error). Never throws, so
+// one flaky request can't crash the whole run.
+async function fetchWithRetry(url: string, attempts = 5): Promise<Response | null> {
+  for (let i = 0; i < attempts; i++) {
+    try {
+      const res = await fetch(url)
+      if (res.ok) return res
+      if (res.status === 403 || res.status === 429 || res.status >= 500) {
+        await sleep(800 * 2 ** i) // 0.8s, 1.6s, 3.2s, 6.4s, 12.8s
+        continue
+      }
+      return res // non-retryable status
+    } catch {
+      await sleep(800 * 2 ** i) // network error — back off and retry
+    }
+  }
+  return null
+}
 
 async function main(): Promise<void> {
   const execute = process.argv.includes('--execute')
@@ -45,12 +70,23 @@ async function main(): Promise<void> {
   const before = await countTracks()
   const trackByItunes = new Map<number, RawTrack>()
   const links: { name: string; ids: number[] }[] = []
+  const failures: string[] = []
   for (const t of targets) {
-    const res = await fetch(buildSearchUrl(t.term, PER_SUBGENRE))
-    const rows = res.ok ? parseTracks(await res.json()) : []
+    const res = await fetchWithRetry(buildSearchUrl(t.term, PER_SUBGENRE))
+    if (!res || !res.ok) {
+      console.error(`[import-tracks] iTunes fetch failed for "${t.name}": ${res ? `${res.status} ${res.statusText}` : 'network error'}`)
+      failures.push(t.name)
+      await sleep(THROTTLE_MS)
+      continue
+    }
+    const rows = parseTracks(await res.json())
     for (const r of rows) trackByItunes.set(r.itunesTrackId, r)
     links.push({ name: t.name, ids: rows.map((r) => r.itunesTrackId) })
-    await sleep(200) // be polite to the iTunes endpoint
+    await sleep(THROTTLE_MS) // be polite to the iTunes endpoint
+  }
+  if (failures.length) {
+    console.error(`[import-tracks] WARNING: ${failures.length} subgenre fetch(es) failed: ${failures.join(', ')}`)
+    process.exitCode = 1 // surface partial import; the run is idempotent, so re-run recovers
   }
   console.log(`[import-tracks] fetched unique tracks=${trackByItunes.size} across ${targets.length} subgenres`)
   console.log('[import-tracks] sample:', [...trackByItunes.values()].slice(0, 5).map((r) => `${r.trackName} — ${r.artistName}`).join(' | '))
