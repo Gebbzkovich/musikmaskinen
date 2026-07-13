@@ -22,13 +22,28 @@ export function ChatView() {
   }
   useEffect(() => {
     if (!conversationId) return
-    getMessages(conversationId).then((l) => { setMsgs(l); void hydrate(l) }).catch(() => {})
-    const unsub = subscribeToConversation(conversationId, (m) => setMsgs((cur) => cur.some((x) => x.id === m.id) ? cur : [...cur, m]))
-    return unsub
+    let active = true
+    // Reset on conversation switch so the previous chat never flashes here.
+    setMsgs([]); setTracks(new Map())
+    // Merge by id (never overwrite): a realtime insert can land before the initial
+    // fetch resolves; unioning both keeps every message, sorted by time.
+    const merge = (list: Message[]) => setMsgs((cur) => {
+      const map = new Map(cur.map((m) => [m.id, m]))
+      for (const m of list) map.set(m.id, m)
+      return [...map.values()].sort((a, b) => a.createdAt.localeCompare(b.createdAt))
+    })
+    getMessages(conversationId).then((l) => { if (active) { merge(l); void hydrate(l) } }).catch(() => {})
+    const unsub = subscribeToConversation(conversationId, (m) => { if (active) merge([m]) })
+    return () => { active = false; unsub() }
   }, [conversationId])
   useEffect(() => { void hydrate(msgs); endRef.current?.scrollIntoView() }, [msgs])
 
-  const send = async () => { const b = text.trim(); if (!b || !me) return; setText(''); await sendText(conversationId, me, b) }
+  const send = async () => {
+    const b = text.trim()
+    if (!b || !me) return
+    setText('')
+    try { await sendText(conversationId, me, b) } catch { setText(b) } // restore draft on failure
+  }
   return (
     <section className="flex min-h-svh flex-col px-3 pt-4">
       <div className="flex flex-1 flex-col justify-end space-y-2 pb-4">
