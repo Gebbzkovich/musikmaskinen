@@ -39,9 +39,16 @@ Genre → subgenre → låtar → glas-spelare. Mörk premium/glas, text alltid 
 
 ## Fas 2 — Social (kärnan)
 
-Sign in with Apple (endast Apple först). Vänner. Dela låt + kommentar till en vän
-precis som en TikTok. Privata kommentarstrådar (aldrig publikt). Kopiera-länk.
-`tracks.itunes_track_id` är stabilt ID som delningar/kommentarer refererar.
+Konton (magisk länk + Google; Apple senare, kräver $99/år). Vänner via @handle. Dela
+låt + kommentar till en vän precis som en TikTok. Privata konversation-per-vän-chattar
+(aldrig publikt). Realtime. `tracks.id` refereras av delade låtar (kind='track').
+Spec: `docs/superpowers/specs/2026-07-13-musikmaskinen-fas2-social-design.md`.
+
+- **Fas 2a (data)** ✅ — migration `0005` (profiles, friendships, conversations,
+  conversation_members, messages) + RLS (icke-medlem läser **0 rader**, empiriskt bevisat) +
+  `get_or_create_direct_conversation`-RPC (endast vänner) + realtime på messages.
+- **Fas 2b (app)** — inloggning (magisk länk + Google), @handle-setup, vänner,
+  inkorg/chatt med inline spelbara låtkort, dela-ark. Wira Apple senare.
 
 ## Fas 3 — Fördjupning
 
