@@ -31,7 +31,7 @@ export function ChatView() {
   const send = async () => { const b = text.trim(); if (!b || !me) return; setText(''); await sendText(conversationId, me, b) }
   return (
     <section className="flex min-h-svh flex-col px-3 pt-4">
-      <div className="flex-1 space-y-2 pb-4">
+      <div className="flex flex-1 flex-col justify-end space-y-2 pb-4">
         {msgs.map((m) => {
           const mine = m.senderId === me
           const t = m.trackId ? tracks.get(m.trackId) : undefined

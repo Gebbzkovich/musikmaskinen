@@ -13,7 +13,7 @@ export function InboxScreen() {
   useEffect(() => {
     if (!me) return
     ;(async () => {
-      const convIds = await listMyConversationIds()
+      const convIds = await listMyConversationIds(me)
       const out: Row[] = []
       const otherIdByConv = new Map<string, string>()
       const { data } = await supabase.from('conversation_members').select('conversation_id,user_id').neq('user_id', me)

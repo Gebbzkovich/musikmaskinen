@@ -65,8 +65,10 @@ export async function getMessages(conversationId: string): Promise<Message[]> {
   return (data as MessageRow[]).map(toMessage)
 }
 
-export async function listMyConversationIds(): Promise<string[]> {
-  const { data, error } = await supabase.from('conversation_members').select('conversation_id')
+export async function listMyConversationIds(me: string): Promise<string[]> {
+  // Filter to MY membership rows: RLS also lets me see the other member's row of
+  // my own conversations, so an unfiltered select returns each conversation twice.
+  const { data, error } = await supabase.from('conversation_members').select('conversation_id').eq('user_id', me)
   if (error) throw new Error(error.message)
   return (data as { conversation_id: string }[]).map((r) => r.conversation_id)
 }
