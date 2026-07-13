@@ -1,11 +1,13 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router'
 import { getSurpriseTrack, type SurpriseResult } from '../lib/db'
 import { player } from '../player/playerStore'
+import { capitalize } from '../lib/links'
 
 export function SurpriseScreen() {
   const [s, setS] = useState<SurpriseResult | null>(null)
   const [loading, setLoading] = useState(true)
+  const keep = useRef(false)
   const surprise = async () => {
     setLoading(true)
     try { const r = await getSurpriseTrack(); if (r) { setS(r); player.playQueue([r.track], 0) } }
@@ -13,6 +15,9 @@ export function SurpriseScreen() {
     finally { setLoading(false) }
   }
   useEffect(() => { void surprise() }, [])
+  // Pause playback when leaving this view (backing out) — but keep it playing if
+  // the user chose to dive into the subgenre.
+  useEffect(() => () => { if (!keep.current) player.pause() }, [])
   return (
     <section className="flex min-h-svh flex-col items-center px-6 pt-8"
       style={{ background: s ? `radial-gradient(340px 340px at 50% 22%, ${s.subgenre.color}66, transparent 60%)` : undefined }}>
@@ -25,10 +30,10 @@ export function SurpriseScreen() {
           <div className="mt-6 text-center">
             <div className="text-[22px] font-bold tracking-tight">{s.track.trackName}</div>
             <div className="mt-1 text-white/55">{s.track.artistName}</div>
-            <div className="mt-1 text-[12px] text-white/40">ur {s.subgenre.name}</div>
+            <div className="mt-1 text-[12px] text-white/40">ur {capitalize(s.subgenre.name)}</div>
           </div>
           <button onClick={surprise} disabled={loading} className="mt-8 flex h-12 w-full max-w-xs items-center justify-center rounded-[16px] bg-white font-medium text-black disabled:opacity-50">Nästa överraskning</button>
-          <Link to={`/s/${s.subgenre.slug}`} className="glass mt-3 flex h-12 w-full max-w-xs items-center justify-center rounded-[16px] font-medium">Gå till {s.subgenre.name}</Link>
+          <Link to={`/s/${s.subgenre.slug}`} onClick={() => { keep.current = true }} className="glass mt-3 flex h-12 w-full max-w-xs items-center justify-center rounded-[16px] font-medium">Gå till {capitalize(s.subgenre.name)}</Link>
         </>
       )}
       {!s && loading && <p className="mt-10 text-white/40">Slumpar…</p>}
