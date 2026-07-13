@@ -37,7 +37,7 @@ export function FriendsScreen() {
   return (
     <section className="px-4 pt-6">
       <h1 className="text-[26px] font-bold tracking-tight">Vänner</h1>
-      <input value={q} onChange={(e) => doSearch(e.target.value)} placeholder="Sök @handle" className="glass mt-4 h-11 w-full rounded-[14px] px-4 outline-none placeholder:text-white/35" />
+      <input value={q} onChange={(e) => doSearch(e.target.value)} placeholder="Sök @användarnamn" className="glass mt-4 h-11 w-full rounded-[14px] px-4 outline-none placeholder:text-white/35" />
       {err && <p className="mt-3 text-red-300">{err}</p>}
       {results.map((p) => (
         <div key={p.id} className="mt-2 flex items-center gap-3 rounded-[13px] p-2">
@@ -59,7 +59,7 @@ export function FriendsScreen() {
           <div className="flex-1"><div className="font-medium">@{p.handle}</div><div className="text-xs text-white/50">{p.displayName}</div></div>
         </button>
       ))}
-      {friends.length === 0 && <p className="mt-3 text-white/40">Inga vänner ännu — sök ett @handle ovan.</p>}
+      {friends.length === 0 && <p className="mt-3 text-white/40">Inga vänner ännu — sök ett @användarnamn ovan.</p>}
     </section>
   )
 }
