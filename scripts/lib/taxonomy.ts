@@ -34,7 +34,7 @@ export const families: FamilySeed[] = [
     { name: 'jazz' }, { name: 'bebop' }, { name: 'cool jazz' }, { name: 'jazz fusion' },
     { name: 'vocal jazz' }, { name: 'smooth jazz' } ] },
   { name: 'R&B / Soul', slug: 'rnb-soul', color: '#a05fbf', sort: 8, subgenres: [
-    { name: 'r&b', searchTerm: 'r&b' }, { name: 'soul' }, { name: 'neo soul' }, { name: 'funk' },
+    { name: 'r&b', searchTerm: 'r&b' }, { name: 'soul' }, { name: 'neo soul' },
     { name: 'motown' }, { name: 'contemporary r&b', searchTerm: 'contemporary r&b' } ] },
   { name: 'Country', slug: 'country', color: '#c77a3a', sort: 9, subgenres: [
     { name: 'country' }, { name: 'contemporary country' }, { name: 'outlaw country' },
@@ -67,5 +67,5 @@ export const families: FamilySeed[] = [
   { name: 'Soundtrack', slug: 'soundtrack', color: '#6c6f86', sort: 21, subgenres: [
     { name: 'soundtrack' }, { name: 'video game music' }, { name: 'anime' }, { name: 'movie tunes', searchTerm: 'film score' } ] },
   { name: 'Nordic', slug: 'nordic', color: '#4f8fbf', sort: 22, subgenres: [
-    { name: 'swedish pop' }, { name: 'swedish indie pop' }, { name: 'schlager' }, { name: 'swedish indie rock' } ] },
+    { name: 'swedish indie pop' }, { name: 'schlager' }, { name: 'swedish indie rock' }, { name: 'nordic folk', searchTerm: 'nordic folk' } ] },
 ]

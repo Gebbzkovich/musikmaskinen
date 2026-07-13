@@ -19,3 +19,10 @@ test('slugify normalizes names', () => {
   expect(slugify('Deep House')).toBe('deep-house')
   expect(slugify('R&B / Soul')).toBe('r-b-soul')
 })
+
+test('subgenre names are unique across all families', () => {
+  // genres.family_id is single-owner, so a name in two families would be
+  // silently reassigned to whichever family is applied last.
+  const names = families.flatMap((f: FamilySeed) => f.subgenres.map((s) => s.name))
+  expect(new Set(names).size).toBe(names.length)
+})
