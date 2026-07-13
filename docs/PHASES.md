@@ -16,19 +16,36 @@ Databas-schema, dataimport och empirisk verifiering. Ingen UI.
   dagens live-everynoise (som driftar över tid). Normalisera — inkl. ev. y-flip — i
   renderingslagret, inte i datat.
 
-## Fas 1 — Canvas-karta
+> **Pivot (2026-07-13):** Kartan är SLOPAD. Appen blev en premium bläddrare + spelare.
+> everynoise-datat används som taxonomi + färg, inte som scatter-karta.
+> Spec: `docs/superpowers/specs/2026-07-13-musikmaskinen-fas1-browse-player-design.md`.
 
-Interaktiv genrekarta renderad på `<canvas>` (aldrig tusentals DOM-noder):
-pan/zoom och LOD (level-of-detail). Normalisering av källkoordinater sker här.
+## Fas 1 — Bläddrare + spelare
 
-## Fas 2 — Auth + egna listor
+Genre → subgenre → låtar → glas-spelare. Mörk premium/glas, text alltid överst.
 
-Supabase Auth. Användare skapar och sparar egna listor. `tracks`-modellen (kanonisk,
-plattforms-ID:n som metadata) driver list-funktionerna.
+- **Fas 1a (data)** ✅ — migration `0003` (genre_families, genres.family_id/slug,
+  tracks-berikning: itunes_track_id/artwork_url/preview_url/apple_music_url/duration_ms,
+  subgenre_tracks) + `0004` (släpp för strikt (artist,track)-unik). `scripts/lib/taxonomy.ts`
+  (22 kurerade familjer), `apply-taxonomy.ts` (taggar subgenrer), `import-tracks.ts`
+  (iTunes: omslag + 30s-preview + Apple Music-länk, dry-run/execute, idempotent, fail-loud,
+  retry/throttle mot iTunes rate-limit).
+  - Not: iTunes rate-limitar per IP (~20 req/min); en körning fyller det den hinner före
+    cooldown. Kör om `import-tracks.ts --execute` (idempotent) för att fylla resterande
+    subgenrer. WARNING-raden listar vilka som saknas.
+- **Fas 1b (app)** — React browse+player: `/` genrer, `/g/:family` subgenrer,
+  `/s/:subgenre` låtar, global glas-spelare, `/track/:itunesId` delningslänk,
+  Spotify/Apple Music-genvägar (deep links). Delningslänk + Share-knapp (utan konto).
 
-## Fas 3 — Previews + deep links
+## Fas 2 — Social (kärnan)
 
-iTunes-previews och deep links ut till plattformar.
+Sign in with Apple (endast Apple först). Vänner. Dela låt + kommentar till en vän
+precis som en TikTok. Privata kommentarstrådar (aldrig publikt). Kopiera-länk.
+`tracks.itunes_track_id` är stabilt ID som delningar/kommentarer refererar.
+
+## Fas 3 — Fördjupning
+
+Fler tjänst-deep-links, rikare previews, upptäckt.
 
 ## Fas 4 — Polish / PWA
 
