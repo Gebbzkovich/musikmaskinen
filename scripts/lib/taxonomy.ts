@@ -57,7 +57,7 @@ export const families: FamilySeed[] = [
     { name: 'k-pop', searchTerm: 'k-pop' }, { name: 'k-rap', searchTerm: 'korean hip hop' },
     { name: 'korean r&b', searchTerm: 'korean r&b' } ] },
   { name: 'Afro', slug: 'afro', color: '#d09a1e', sort: 17, subgenres: [
-    { name: 'afrobeats' }, { name: 'afropop' }, { name: 'amapiano' }, { name: 'afro house' } ] },
+    { name: 'afrobeat' }, { name: 'afropop' }, { name: 'amapiano' }, { name: 'afro house' } ] },
   { name: 'Ambient', slug: 'ambient', color: '#5aa0a8', sort: 18, subgenres: [
     { name: 'ambient' }, { name: 'dark ambient' }, { name: 'drone' }, { name: 'new age' } ] },
   { name: 'Funk / Disco', slug: 'funk-disco', color: '#c9820c', sort: 19, subgenres: [
@@ -67,5 +67,5 @@ export const families: FamilySeed[] = [
   { name: 'Soundtrack', slug: 'soundtrack', color: '#6c6f86', sort: 21, subgenres: [
     { name: 'soundtrack' }, { name: 'video game music' }, { name: 'anime' }, { name: 'movie tunes', searchTerm: 'film score' } ] },
   { name: 'Nordic', slug: 'nordic', color: '#4f8fbf', sort: 22, subgenres: [
-    { name: 'swedish pop' }, { name: 'swedish indie' }, { name: 'schlager' }, { name: 'svensk pop', searchTerm: 'svensk pop' } ] },
+    { name: 'swedish pop' }, { name: 'swedish indie pop' }, { name: 'schlager' }, { name: 'swedish indie rock' } ] },
 ]
