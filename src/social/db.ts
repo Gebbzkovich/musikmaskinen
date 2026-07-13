@@ -2,22 +2,24 @@ import { supabase } from '../lib/supabase'
 import type { Profile, Message } from './types'
 import type { Track } from '../lib/types'
 
-interface ProfileRow { id: string; handle: string | null; display_name: string | null }
-const toProfile = (r: ProfileRow): Profile => ({ id: r.id, handle: r.handle, displayName: r.display_name })
+interface ProfileRow { id: string; handle: string | null; display_name: string | null; avatar_url: string | null }
+const toProfile = (r: ProfileRow): Profile => ({ id: r.id, handle: r.handle, displayName: r.display_name, avatarUrl: r.avatar_url })
 
 export async function getMyProfile(userId: string): Promise<Profile | null> {
-  const { data, error } = await supabase.from('profiles').select('id,handle,display_name').eq('id', userId).maybeSingle()
+  const { data, error } = await supabase.from('profiles').select('id,handle,display_name,avatar_url').eq('id', userId).maybeSingle()
   if (error) throw new Error(error.message)
   return data ? toProfile(data as ProfileRow) : null
 }
 
-export async function setMyProfile(userId: string, handle: string, displayName: string): Promise<void> {
-  const { error } = await supabase.from('profiles').update({ handle: handle.toLowerCase(), display_name: displayName }).eq('id', userId)
+export async function setMyProfile(userId: string, handle: string, displayName: string, avatarUrl?: string | null): Promise<void> {
+  const patch: Record<string, string | null> = { handle: handle.toLowerCase(), display_name: displayName }
+  if (avatarUrl !== undefined) patch.avatar_url = avatarUrl
+  const { error } = await supabase.from('profiles').update(patch).eq('id', userId)
   if (error) throw new Error(error.message)
 }
 
 export async function searchProfiles(handle: string): Promise<Profile[]> {
-  const { data, error } = await supabase.from('profiles').select('id,handle,display_name').ilike('handle', `${handle.toLowerCase()}%`).not('handle', 'is', null).limit(10)
+  const { data, error } = await supabase.from('profiles').select('id,handle,display_name,avatar_url').ilike('handle', `${handle.toLowerCase()}%`).not('handle', 'is', null).limit(10)
   if (error) throw new Error(error.message)
   return (data as ProfileRow[]).map(toProfile)
 }
@@ -51,7 +53,7 @@ export async function listFriendships(me: string): Promise<{ accepted: { id: str
 
 export async function getProfilesByIds(ids: string[]): Promise<Map<string, Profile>> {
   if (ids.length === 0) return new Map()
-  const { data, error } = await supabase.from('profiles').select('id,handle,display_name').in('id', ids)
+  const { data, error } = await supabase.from('profiles').select('id,handle,display_name,avatar_url').in('id', ids)
   if (error) throw new Error(error.message)
   return new Map((data as ProfileRow[]).map((r) => [r.id, toProfile(r)]))
 }

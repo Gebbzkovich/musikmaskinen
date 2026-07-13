@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useSession } from '../../auth/session'
 import { listFriendships, getProfilesByIds, shareTrackToFriend } from '../../social/db'
 import type { Profile, Track } from '../../social/types'
+import { Avatar } from '../Avatar'
 
 export function ShareSheet({ track, onClose }: { track: Track; onClose: () => void }) {
   const { session } = useSession()
@@ -22,7 +23,7 @@ export function ShareSheet({ track, onClose }: { track: Track; onClose: () => vo
         <div className="flex gap-4 overflow-x-auto pb-2">
           {friends.map((f) => (
             <button key={f.id} onClick={async () => { await shareTrackToFriend(me, f.id, track.id, comment); setSentTo(f.handle) }} className="flex flex-col items-center gap-1">
-              <span className="flex h-14 w-14 items-center justify-center rounded-full bg-white/10 text-lg font-semibold">{(f.handle ?? '?')[0]?.toUpperCase()}</span>
+              <Avatar url={f.avatarUrl} name={f.handle} size={56} />
               <span className="max-w-16 truncate text-xs text-white/60">@{f.handle}</span>
             </button>
           ))}
