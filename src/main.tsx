@@ -9,6 +9,7 @@ import { GenresPage } from './routes/GenresPage'
 import { SubgenresPage } from './routes/SubgenresPage'
 import { SongsPage } from './routes/SongsPage'
 import { TrackDeepLink } from './routes/TrackDeepLink'
+import { SurpriseScreen } from './routes/SurpriseScreen'
 import { LoginScreen } from './auth/LoginScreen'
 import { HandleSetup } from './auth/HandleSetup'
 import { InboxScreen } from './routes/InboxScreen'
@@ -27,6 +28,7 @@ const router = createBrowserRouter([
       { path: '/g/:familySlug', element: <SubgenresPage /> },
       { path: '/s/:subgenreSlug', element: <SongsPage /> },
       { path: '/track/:itunesId', element: <TrackDeepLink /> },
+      { path: '/surprise', element: <SurpriseScreen /> },
       { path: '/inbox', element: gated(<InboxScreen />) },
       { path: '/friends', element: gated(<FriendsScreen />) },
       { path: '/me', element: gated(<ProfileScreen />) },

@@ -56,3 +56,17 @@ export async function getTrackByItunesId(itunesId: number): Promise<Track | null
   if (error) throw new Error(`getTrackByItunesId: ${error.message}`)
   return data ? toTrack(data as TrackRow) : null
 }
+
+export interface SurpriseResult { track: Track; subgenre: { slug: string; name: string; color: string } }
+interface SurpriseRow { track_id: string; track_name: string; artist_name: string; artwork_url: string | null; preview_url: string | null; apple_music_url: string | null; duration_ms: number | null; itunes_track_id: number | null; subgenre_slug: string; subgenre_name: string; subgenre_color: string }
+export async function getSurpriseTrack(): Promise<SurpriseResult | null> {
+  const { data, error } = await supabase.rpc('get_surprise_track')
+  if (error) throw new Error(`getSurpriseTrack: ${error.message}`)
+  const rows = (data ?? []) as SurpriseRow[]
+  if (rows.length === 0) return null
+  const r = rows[0]
+  return {
+    track: { id: r.track_id, itunesTrackId: r.itunes_track_id ?? 0, trackName: r.track_name, artistName: r.artist_name, artworkUrl: r.artwork_url ?? '', previewUrl: r.preview_url ?? '', appleMusicUrl: r.apple_music_url ?? '', durationMs: r.duration_ms ?? 0 },
+    subgenre: { slug: r.subgenre_slug, name: r.subgenre_name, color: r.subgenre_color },
+  }
+}

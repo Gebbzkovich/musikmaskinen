@@ -16,7 +16,8 @@ export function InboxScreen() {
       const convIds = await listMyConversationIds(me)
       const out: Row[] = []
       const otherIdByConv = new Map<string, string>()
-      const { data } = await supabase.from('conversation_members').select('conversation_id,user_id').neq('user_id', me)
+      const { data, error: cmErr } = await supabase.from('conversation_members').select('conversation_id,user_id').neq('user_id', me)
+      if (cmErr) return
       for (const r of (data ?? []) as { conversation_id: string; user_id: string }[]) otherIdByConv.set(r.conversation_id, r.user_id)
       const profs = await getProfilesByIds([...otherIdByConv.values()])
       for (const id of convIds) {
