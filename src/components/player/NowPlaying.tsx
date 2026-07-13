@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react'
 import type { Track } from '../../lib/types'
 import { player } from '../../player/playerStore'
 import { usePlayer } from '../../player/usePlayer'
@@ -6,9 +7,17 @@ import { ShareButton } from '../ShareButton'
 
 export function NowPlaying({ track, onClose }: { track: Track; onClose: () => void }) {
   const { state } = usePlayer()
+  const closeRef = useRef<HTMLButtonElement>(null)
+  useEffect(() => {
+    closeRef.current?.focus()
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [onClose])
   return (
-    <div className="fixed inset-0 z-40 flex flex-col items-center bg-[#08080c]/95 px-6 pb-24 pt-6 backdrop-blur-2xl">
-      <button onClick={onClose} aria-label="Stäng" className="self-start text-2xl leading-none text-white/60">▾</button>
+    <div role="dialog" aria-modal="true" aria-label={`Spelas nu: ${track.trackName}`}
+      className="fixed inset-0 z-40 flex flex-col items-center bg-[#08080c]/95 px-6 pb-24 pt-6 backdrop-blur-2xl">
+      <button ref={closeRef} onClick={onClose} aria-label="Stäng" className="self-start text-2xl leading-none text-white/60">▾</button>
       <div className="mt-6 h-56 w-56 overflow-hidden rounded-[26px] shadow-[0_30px_70px_-24px_rgba(0,0,0,0.8),inset_0_0_0_1px_rgba(255,255,255,0.14)]">
         <img src={track.artworkUrl} alt="" className="h-full w-full object-cover" />
       </div>

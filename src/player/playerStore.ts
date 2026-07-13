@@ -27,7 +27,7 @@ export const player = {
     if (state.isPlaying) { audio.pause(); set({ isPlaying: false }) }
     else { void audio.play().catch(() => {}); set({ isPlaying: true }) }
   },
-  next(): void { if (state.index < state.queue.length - 1) { set({ index: state.index + 1, isPlaying: true }); load(true) } else { set({ isPlaying: false }) } },
+  next(): void { if (state.index < state.queue.length - 1) { set({ index: state.index + 1, isPlaying: true }); load(true) } else { audio?.pause(); set({ isPlaying: false }) } },
   prev(): void { if (state.index > 0) { set({ index: state.index - 1, isPlaying: true }); load(true) } },
 }
 

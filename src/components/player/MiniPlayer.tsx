@@ -9,14 +9,16 @@ export function MiniPlayer() {
   if (!current) return null
   return (
     <>
-      <div onClick={() => setOpen(true)}
-        className="glass fixed bottom-20 left-1/2 z-30 flex h-14 w-[min(480px,calc(100%-28px))] -translate-x-1/2 items-center gap-3 rounded-[16px] px-3">
-        <img src={current.artworkUrl} alt="" className="h-10 w-10 rounded-[9px] object-cover" />
-        <div className="min-w-0 flex-1">
-          <div className="truncate text-[12.5px] font-medium">{current.trackName}</div>
-          <div className="truncate text-[11px] text-white/55">{current.artistName}</div>
-        </div>
-        <button onClick={(e) => { e.stopPropagation(); player.toggle() }} aria-label="Spela/pausa">
+      <div className="glass fixed bottom-20 left-1/2 z-30 flex h-14 w-[min(480px,calc(100%-28px))] -translate-x-1/2 items-center gap-3 rounded-[16px] px-3">
+        <button type="button" onClick={() => setOpen(true)} aria-label={`Öppna spelaren: ${current.trackName}`}
+          className="flex min-w-0 flex-1 items-center gap-3 text-left">
+          <img src={current.artworkUrl} alt="" className="h-10 w-10 rounded-[9px] object-cover" />
+          <span className="min-w-0 flex-1">
+            <span className="block truncate text-[12.5px] font-medium">{current.trackName}</span>
+            <span className="block truncate text-[11px] text-white/55">{current.artistName}</span>
+          </span>
+        </button>
+        <button onClick={() => player.toggle()} aria-label="Spela/pausa">
           {state.isPlaying
             ? <svg viewBox="0 0 24 24" width="19" height="19" fill="#fff"><path d="M7 5h4v14H7zM13 5h4v14h-4z" /></svg>
             : <svg viewBox="0 0 24 24" width="19" height="19" fill="#fff"><path d="M8 5v14l11-7z" /></svg>}
