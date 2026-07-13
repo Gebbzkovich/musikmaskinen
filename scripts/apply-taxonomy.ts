@@ -19,6 +19,14 @@ async function main(): Promise<void> {
     auth: { persistSession: false },
   })
 
+  // Look up an everynoise genre by name (case-insensitive). Throws on a real
+  // query error so transient failures are never miscounted as "not found".
+  const findGenre = async (name: string): Promise<{ id: string; name: string } | null> => {
+    const { data, error } = await supabase.from('genres').select('id, name').ilike('name', name).limit(1)
+    if (error) throw new Error(`genre lookup failed for "${name}": ${error.message}`)
+    return data && data.length ? (data[0] as { id: string; name: string }) : null
+  }
+
   const familyRows = families.map((f) => ({ name: f.name, slug: f.slug, color: f.color, sort: f.sort }))
   console.log(`[apply-taxonomy] mode=${execute ? 'execute' : 'dry-run'} families=${familyRows.length}`)
 
@@ -27,8 +35,7 @@ async function main(): Promise<void> {
     const unmatched: string[] = []
     for (const f of families) {
       for (const s of f.subgenres) {
-        const { data } = await supabase.from('genres').select('id').ilike('name', s.name).limit(1)
-        if (data && data.length) matched++
+        if (await findGenre(s.name)) matched++
         else unmatched.push(`${f.slug}:${s.name}`)
       }
     }
@@ -49,11 +56,11 @@ async function main(): Promise<void> {
   for (const f of families) {
     const familyId = famBySlug.get(f.slug)
     for (const s of f.subgenres) {
-      const { data: g } = await supabase.from('genres').select('id, name').ilike('name', s.name).limit(1)
-      if (!g || !g.length) { unmatched.push(`${f.slug}:${s.name}`); continue }
+      const match = await findGenre(s.name)
+      if (!match) { unmatched.push(`${f.slug}:${s.name}`); continue }
       const { error: ue } = await supabase.from('genres')
-        .update({ family_id: familyId, slug: slugify(g[0].name as string) })
-        .eq('id', g[0].id)
+        .update({ family_id: familyId, slug: slugify(match.name) })
+        .eq('id', match.id)
       if (ue) throw new Error(`tag failed for ${s.name}: ${ue.message}`)
       tagged++
     }
