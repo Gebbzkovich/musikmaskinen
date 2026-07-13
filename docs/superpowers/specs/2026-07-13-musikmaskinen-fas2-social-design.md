@@ -15,8 +15,8 @@ its iTunes preview inline.
 
 ## Goals
 
-1. **Accounts** — temporary email auth now, provider-agnostic so **Sign in with
-   Apple** (or Google/magic-link) slots in later with no rebuild.
+1. **Accounts** — **magic link + Google** now (both free), provider-agnostic so
+   **Sign in with Apple** slots in later with no rebuild.
 2. **Profiles** — a unique **`@handle`** + display name per user.
 3. **Friends** — find someone by `@handle`, send a request, accept.
 4. **Conversation per friend** (TikTok/DM model) — a chat is a stream of
@@ -43,9 +43,11 @@ its iTunes preview inline.
 
 ## Identity & auth
 
-- Supabase Auth. **Temp provider: email + password** (labelled temporary in the UI).
-  The app never hardcodes provider specifics; swapping to Apple/Google is a Supabase
-  dashboard config + one button.
+- Supabase Auth. **Providers: magic link (email) + Google OAuth** (both free). Magic
+  link works out of the box (Supabase built-in email); Google needs a one-time free
+  Google Cloud OAuth client configured in Supabase → Auth → Providers → Google (the
+  app ships the "Continue with Google" button; it lights up once configured).
+  Provider-agnostic — **Sign in with Apple** ($99/yr) can be added later with no rebuild.
 - `profiles` table: `id uuid pk references auth.users(id) on delete cascade`,
   `handle text unique not null` (lowercased, `^[a-z0-9_]{3,20}$`), `display_name text`,
   `created_at`. Handle is chosen on first login (a gate before entering the app).
@@ -135,8 +137,8 @@ its iTunes preview inline.
 
 - **Fas 1** ✅ — browse + player (data + app), merged.
 - **Fas 2** (this spec) — social: accounts, friends, TikTok-style share-song-with-
-  comment, private conversation-per-friend chats, realtime. Temp email auth →
-  Apple/Google later.
+  comment, private conversation-per-friend chats, realtime. Auth = magic link +
+  Google (both free); Apple later.
 - **Fas 3** — discovery ("Överraska mig" radio), richer previews, more service links.
 - **Fas 4** — polish / PWA / notifications.
 
@@ -144,5 +146,5 @@ its iTunes preview inline.
 
 - Conversation-per-friend (TikTok/DM); song-share and comment are both messages.
 - Friends via `@handle` + request/accept. Nothing public — RLS-enforced.
-- Temp email auth now; provider-agnostic; Apple ($99/yr) or Google/magic-link later.
+- Auth now = magic link + Google (both free); provider-agnostic; Apple ($99/yr) optional later.
 - Realtime via Supabase Realtime. Start 1:1 (groups later).
