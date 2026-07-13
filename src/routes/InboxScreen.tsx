@@ -4,6 +4,7 @@ import { useSession } from '../auth/session'
 import { listMyConversationIds, getMessages, getProfilesByIds } from '../social/db'
 import { supabase } from '../lib/supabase'
 import type { Profile } from '../social/types'
+import { Avatar } from '../components/Avatar'
 
 interface Row { id: string; other: Profile | null; preview: string }
 export function InboxScreen() {
@@ -34,7 +35,7 @@ export function InboxScreen() {
       {rows.length === 0 && <p className="mt-3 text-white/40">Inga chattar ännu. Dela en låt med en vän!</p>}
       {rows.map((r) => (
         <Link key={r.id} to={`/c/${r.id}`} className="mt-2 flex items-center gap-3 rounded-[13px] p-2 active:bg-white/[0.06]">
-          <div className="flex h-11 w-11 items-center justify-center rounded-full bg-white/10 font-semibold">{(r.other?.handle ?? '?')[0]?.toUpperCase()}</div>
+          <Avatar url={r.other?.avatarUrl} name={r.other?.handle} size={44} />
           <div className="min-w-0 flex-1"><div className="font-medium">@{r.other?.handle ?? '…'}</div><div className="truncate text-[12.5px] text-white/50">{r.preview}</div></div>
         </Link>
       ))}

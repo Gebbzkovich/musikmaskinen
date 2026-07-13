@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router'
 import { useSession } from '../auth/session'
 import { searchProfiles, sendFriendRequest, acceptFriendRequest, listFriendships, getProfilesByIds, getOrCreateConversation } from '../social/db'
 import type { Profile } from '../social/types'
+import { Avatar } from '../components/Avatar'
 
 function getErrorMessage(error: unknown): string {
   return error instanceof Error ? error.message : 'Något gick fel'
@@ -54,7 +55,7 @@ export function FriendsScreen() {
       <h2 className="mt-6 text-sm uppercase tracking-wide text-white/40">Dina vänner</h2>
       {friends.map((p) => (
         <button key={p.id} onClick={async () => { try { navigate(`/c/${await getOrCreateConversation(p.id)}`) } catch (e) { setErr(getErrorMessage(e)) } }} className="mt-2 flex w-full items-center gap-3 rounded-[13px] p-2 text-left active:bg-white/[0.06]">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 font-semibold">{(p.handle ?? '?')[0]?.toUpperCase()}</div>
+          <Avatar url={p.avatarUrl} name={p.handle} size={40} />
           <div className="flex-1"><div className="font-medium">@{p.handle}</div><div className="text-xs text-white/50">{p.displayName}</div></div>
         </button>
       ))}
