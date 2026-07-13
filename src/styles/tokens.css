@@ -1,0 +1,14 @@
+:root {
+  --bg: #08080c;
+  --ink: #f5f5f7;
+  --mut: rgba(255, 255, 255, 0.55);
+  --mut2: rgba(255, 255, 255, 0.4);
+  --glass-bg: rgba(255, 255, 255, 0.07);
+  --glass-stroke: rgba(255, 255, 255, 0.12);
+  --glass-blur: 26px;
+  --glass-sat: 180%;
+  --violet: #7b5cff;
+  --radius: 18px;
+  --dur: 240ms;
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+}
